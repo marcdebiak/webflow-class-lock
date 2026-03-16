@@ -1,0 +1,38 @@
+{
+  "manifest_version": 3,
+  "name": "Webflow Class Guard",
+  "version": "0.1.0",
+  "description": "Protect Webflow utility classes from accidental edits in the Designer.",
+  "permissions": ["storage", "contextMenus", "activeTab"],
+  "host_permissions": [
+    "https://*.design.webflow.com/*",
+    "https://webflow.com/design/*"
+  ],
+  "background": {
+    "service_worker": "src/background/service-worker.ts",
+    "type": "module"
+  },
+  "action": {
+    "default_popup": "src/popup/index.html",
+    "default_icon": {
+      "16": "public/icons/icon16.png",
+      "48": "public/icons/icon48.png",
+      "128": "public/icons/icon128.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.design.webflow.com/*",
+        "https://webflow.com/design/*"
+      ],
+      "js": ["src/content/index.ts"],
+      "run_at": "document_idle"
+    }
+  ],
+  "icons": {
+    "16": "public/icons/icon16.png",
+    "48": "public/icons/icon48.png",
+    "128": "public/icons/icon128.png"
+  }
+}
