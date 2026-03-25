@@ -4,7 +4,7 @@ import { StylePanelLocker } from "./locker";
 import { initContextMenu } from "./contextMenu";
 import {
   extractSiteSlug,
-  getProtectedClasses,
+  getAllProtectedClasses,
   getSettings,
 } from "../shared/storage";
 import type { Message, GlobalSettings } from "../shared/types";
@@ -53,7 +53,7 @@ async function init(): Promise<void> {
       return;
     }
 
-    const protectedClasses = await getProtectedClasses(siteSlug);
+    const protectedClasses = await getAllProtectedClasses(siteSlug);
 
     if (protectedClasses.includes(activeClass)) {
       locker.lock(activeClass);

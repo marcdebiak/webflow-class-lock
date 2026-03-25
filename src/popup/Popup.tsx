@@ -1,8 +1,10 @@
 import { useEffect, useState, useCallback } from "react";
 import {
+  getSiteData,
   getProtectedClasses,
   addProtectedClass,
   removeProtectedClass,
+  setActiveFramework,
   getSettings,
   saveSettings,
 } from "../shared/storage";
@@ -10,6 +12,7 @@ import type { GlobalSettings, Message } from "../shared/types";
 import { SiteIndicator } from "./components/SiteIndicator";
 import { ClassList } from "./components/ClassList";
 import { AddClassForm } from "./components/AddClassForm";
+import { FrameworkSelector } from "./components/FrameworkSelector";
 
 type ContentScriptStatus = "active" | "inactive" | "loading";
 
@@ -17,6 +20,7 @@ export function Popup() {
   const [siteSlug, setSiteSlug] = useState<string | null>(null);
   const [csStatus, setCsStatus] = useState<ContentScriptStatus>("loading");
   const [protectedClasses, setProtectedClasses] = useState<string[]>([]);
+  const [activeFramework, setActiveFrameworkState] = useState<string | null>(null);
   const [settings, setSettings] = useState<GlobalSettings | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -49,11 +53,12 @@ export function Popup() {
           setSiteSlug(response.siteSlug);
           setCsStatus("active");
 
-          const [classes, s] = await Promise.all([
-            getProtectedClasses(response.siteSlug),
+          const [siteData, s] = await Promise.all([
+            getSiteData(response.siteSlug),
             getSettings(),
           ]);
-          setProtectedClasses(classes);
+          setProtectedClasses(siteData?.protectedClasses ?? []);
+          setActiveFrameworkState(siteData?.activeFramework ?? null);
           setSettings(s);
         } else {
           setCsStatus("inactive");
@@ -88,6 +93,15 @@ export function Popup() {
       if (!siteSlug) return;
       await removeProtectedClass(siteSlug, className);
       setProtectedClasses(await getProtectedClasses(siteSlug));
+    },
+    [siteSlug]
+  );
+
+  const handleFrameworkChange = useCallback(
+    async (frameworkId: string | null) => {
+      if (!siteSlug) return;
+      await setActiveFramework(siteSlug, frameworkId);
+      setActiveFrameworkState(frameworkId);
     },
     [siteSlug]
   );
@@ -138,6 +152,10 @@ export function Popup() {
 
       {csStatus === "active" && siteSlug && (
         <>
+          <FrameworkSelector
+            activeFramework={activeFramework}
+            onChange={handleFrameworkChange}
+          />
           <ClassList
             classes={protectedClasses}
             onRemove={handleRemove}

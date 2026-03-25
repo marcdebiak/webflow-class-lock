@@ -3,7 +3,8 @@
 export interface SiteProtectedClasses {
   siteSlug: string;
   displayName: string;
-  protectedClasses: string[];
+  protectedClasses: string[];   // custom classes added by the user
+  activeFramework: string | null; // preset id, e.g. "client-first"
   updatedAt: number;
 }
 
@@ -29,4 +30,5 @@ export type Message =
   | { type: "ADD_CLASS"; siteSlug: string; className: string }
   | { type: "REMOVE_CLASS"; siteSlug: string; className: string }
   | { type: "SETTINGS_UPDATED"; settings: GlobalSettings }
-  | { type: "FORCE_CHECK" };
+  | { type: "FORCE_CHECK" }
+  | { type: "OPEN_POPUP" };

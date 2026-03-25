@@ -104,6 +104,12 @@ export class StylePanelLocker {
     `;
 
     panelBody.appendChild(overlay);
+
+    overlay
+      .querySelector(".wcg-lock-overlay__hint")
+      ?.addEventListener("click", () => {
+        chrome.runtime.sendMessage({ type: "OPEN_POPUP" } as const);
+      });
   }
 
   private applyDisable(panelBody: HTMLElement): void {

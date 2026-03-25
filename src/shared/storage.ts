@@ -1,5 +1,5 @@
 import { type SiteProtectedClasses, type GlobalSettings, DEFAULT_SETTINGS } from "./types";
-import { STORAGE_KEYS } from "./constants";
+import { STORAGE_KEYS, FRAMEWORK_PRESETS } from "./constants";
 
 // ─── Site slug extraction ─────────────────────────────────────────────────────
 
@@ -24,11 +24,43 @@ function siteKey(siteSlug: string): string {
   return `${STORAGE_KEYS.SITE_PREFIX}${siteSlug}`;
 }
 
-export async function getProtectedClasses(siteSlug: string): Promise<string[]> {
+export async function getSiteData(siteSlug: string): Promise<SiteProtectedClasses | null> {
   const key = siteKey(siteSlug);
   const result = await chrome.storage.sync.get(key);
-  const record = result[key] as SiteProtectedClasses | undefined;
+  return (result[key] as SiteProtectedClasses | undefined) ?? null;
+}
+
+export async function getProtectedClasses(siteSlug: string): Promise<string[]> {
+  const record = await getSiteData(siteSlug);
   return record?.protectedClasses ?? [];
+}
+
+/** Returns custom classes + the active framework's classes merged (no duplicates). */
+export async function getAllProtectedClasses(siteSlug: string): Promise<string[]> {
+  const record = await getSiteData(siteSlug);
+  const custom = record?.protectedClasses ?? [];
+  const frameworkClasses = record?.activeFramework
+    ? (FRAMEWORK_PRESETS[record.activeFramework]?.classes ?? [])
+    : [];
+  return [...new Set([...frameworkClasses, ...custom])];
+}
+
+export async function setActiveFramework(
+  siteSlug: string,
+  frameworkId: string | null
+): Promise<void> {
+  const key = siteKey(siteSlug);
+  const result = await chrome.storage.sync.get(key);
+  const record: SiteProtectedClasses = result[key] ?? {
+    siteSlug,
+    displayName: siteSlug,
+    protectedClasses: [],
+    activeFramework: null,
+    updatedAt: Date.now(),
+  };
+  record.activeFramework = frameworkId;
+  record.updatedAt = Date.now();
+  await chrome.storage.sync.set({ [key]: record });
 }
 
 export async function addProtectedClass(
@@ -41,6 +73,7 @@ export async function addProtectedClass(
     siteSlug,
     displayName: siteSlug,
     protectedClasses: [],
+    activeFramework: null,
     updatedAt: Date.now(),
   };
 

@@ -3,7 +3,7 @@
   "name": "Webflow Class Guard",
   "version": "0.1.0",
   "description": "Protect Webflow utility classes from accidental edits in the Designer.",
-  "permissions": ["storage", "contextMenus", "activeTab"],
+  "permissions": ["storage", "activeTab"],
   "host_permissions": [
     "https://*.design.webflow.com/*",
     "https://webflow.com/design/*"

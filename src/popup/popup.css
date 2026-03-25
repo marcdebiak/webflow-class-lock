@@ -141,6 +141,70 @@ body {
   flex-shrink: 0;
 }
 
+/* ── Framework selector ────────────────────────────────────────────────────── */
+
+.framework-selector {
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.framework-selector__label {
+  font-size: 10px;
+  font-weight: 500;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 7px;
+}
+
+.framework-selector__buttons {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.framework-btn {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 4px;
+  color: #aaa;
+  font-size: 11px;
+  font-family: inherit;
+  font-weight: 500;
+  padding: 4px 9px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+
+.framework-btn:hover {
+  background: rgba(255,255,255,0.1);
+  color: #e0e0e0;
+}
+
+.framework-btn--active {
+  background: rgba(45,111,240,0.2);
+  border-color: rgba(45,111,240,0.5);
+  color: #7aabff;
+}
+
+.framework-btn--active:hover {
+  background: rgba(45,111,240,0.15);
+}
+
+.framework-selector__meta {
+  margin-top: 7px;
+  font-size: 10px;
+  color: #555;
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.framework-selector__author {
+  color: #444;
+}
+
 /* ── Class list ────────────────────────────────────────────────────────────── */
 
 .class-list {

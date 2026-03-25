@@ -39,6 +39,14 @@ async function handleMessage(message: Message): Promise<unknown> {
       await broadcastToDesignerTabs(message);
       return { ok: true };
 
+    case "OPEN_POPUP":
+      // chrome.action.openPopup() requires Chrome 99+ and propagates the
+      // user gesture from the content script click through the message.
+      await chrome.action.openPopup().catch(() => {
+        // Silently fail on older Chrome versions — the user can click the icon.
+      });
+      return { ok: true };
+
     default:
       return null;
   }
