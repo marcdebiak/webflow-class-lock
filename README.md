@@ -4,6 +4,30 @@ A Chrome extension that protects global CSS classes from accidental edits in the
 
 ---
 
+## Quick Start
+
+No build step needed — a pre-built version is included in the `dist/` folder.
+
+1. Download or clone this repo
+2. Open Chrome and go to `chrome://extensions`
+3. Enable **Developer Mode** using the toggle in the top-right corner
+4. Click **Load unpacked** and select the `dist/` folder
+5. Open any Webflow project in the Designer
+6. Click the Class Guard icon in the Chrome toolbar to get started
+
+**To protect a class:**
+- Right-click any class pill in the Webflow selector bar and choose **Protect this class**, or
+- Open the popup, type a class name, and click **Protect**
+
+**To use a framework preset (MAST or Lumos):**
+- Open the popup and select your framework under **Framework preset** — all core framework classes are protected instantly
+
+**To unlock temporarily:**
+- Use the master toggle in the popup to disable protection without losing your list, or
+- Click **Unlock in Class Guard** on the lock overlay to open the popup directly
+
+---
+
 ## What it does
 
 When you select an element in Webflow whose active class is on your protected list, a lock overlay appears over the style panel — blocking any style changes until you either switch to a different class or temporarily disable protection.
@@ -14,9 +38,10 @@ When you select an element in Webflow whose active class is on your protected li
 
 ## Features
 
-- 🔒 Lock overlay on the style panel when a protected class is active
+- Lock overlay on the style panel when a protected class is active
 - Right-click any class pill in the Designer → **Protect this class**
 - Popup to add/remove protected classes by name
+- Built-in presets for MAST and Lumos framework classes
 - Per-site storage — each Webflow project has its own independent list
 - Master on/off toggle to disable protection temporarily without losing your list
 - Works on both current (`*.design.webflow.com`) and legacy (`webflow.com/design/*`) Designer URLs
@@ -81,12 +106,13 @@ src/
 │   ├── components/
 │   │   ├── SiteIndicator.tsx   # Shows current site + connection status
 │   │   ├── ClassList.tsx       # List of protected classes with remove buttons
-│   │   └── AddClassForm.tsx    # Input to add a class by name
+│   │   ├── AddClassForm.tsx    # Input to add a class by name
+│   │   └── FrameworkSelector.tsx  # Framework preset picker
 │   ├── popup.css
 │   ├── index.html
 │   └── main.tsx
 └── shared/
-    ├── constants.ts            # DOM selectors and config constants
+    ├── constants.ts            # DOM selectors, config constants, framework presets
     ├── storage.ts              # chrome.storage.sync wrappers
     └── types.ts                # Shared TypeScript types and message shapes
 ```
@@ -114,7 +140,7 @@ If Webflow updates their Designer UI and the extension stops working, these are 
 Protected classes are stored in `chrome.storage.sync`, scoped per Webflow project:
 
 ```
-wcg_site_<siteSlug>  →  { siteSlug, displayName, protectedClasses: string[], updatedAt }
+wcg_site_<siteSlug>  →  { siteSlug, displayName, protectedClasses: string[], activeFramework: string | null, updatedAt }
 wcg_settings         →  { enabled, lockMode, showBadge }
 ```
 
@@ -127,12 +153,11 @@ The site slug is extracted from the Designer URL — from the subdomain on `*.de
 | Permission | Why it's needed |
 |---|---|
 | `storage` | Saves protected class lists and settings per Webflow project |
-| `contextMenus` | Adds "Protect this class" to the right-click menu on class pills |
 | `activeTab` | Lets the popup communicate with the active Webflow Designer tab |
 | Host: `*.design.webflow.com` | Injects the content script into the Webflow Designer |
 | Host: `webflow.com/design/*` | Injects the content script into the legacy Designer URL format |
 
-No data is collected, transmitted, or logged. Everything stays in Chrome's local storage.
+No data is collected, transmitted, or logged. Everything stays in Chrome's built-in storage. See [PRIVACY.md](./PRIVACY.md) for the full privacy policy.
 
 ---
 
@@ -142,3 +167,15 @@ No data is collected, transmitted, or logged. Everything stays in Chrome's local
 - TypeScript
 - React 18 (popup only)
 - Manifest V3
+
+---
+
+## Credits
+
+Developed by [Paper Tiger](https://papertiger.com).
+
+Framework presets:
+- **MAST** — created by Corey Moen at [No Code Supply](https://nocodesupply.co)
+- **Lumos** — created by [Timothy Ricks](https://timothyricks.com)
+
+Class Guard is not affiliated with either framework.
